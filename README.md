@@ -1,27 +1,46 @@
 # plugin-quantum
 
-**Status: EXPERIMENTAL** — a Decision OS plugin. Separate, private, and OPTIONAL: it
-is a *consumer* of `decision-os-min`, and the core is never modified by it.
+Quantum-safe posture helpers for the Decision OS / AuthGate stack.
 
-## What it plugs into
+**Status: experimental — advisory + interface-only. Weakest plugin in the set.**
 
-Seam: **Advisor + QRNG (experimental)**.
+## What it does
 
-Quantum-SAFE posture helpers: a quantum-risk advisor and a QRNG interface. NOT real quantum computing — that has no practical use here today.
+Two deliberately modest pieces:
 
-## Maturity, honestly
+- `quantum_risk_advisor(action)` — advisory only: flags `"suspicious"` when an
+  action asserts long-lived secrecy under classical crypto (a "harvest-now,
+  decrypt-later" exposure).
+- `QRNG` / `StubQRNG` — an interface for a hardware quantum RNG, stubbed until such
+  hardware is actually available.
 
-- **REFERENCE** — a real, working implementation you can use/extend.
-- **INTERFACE-ONLY** — the plug-seam (Protocol) is defined + a demo/stub; the real
-  backend must be wired against actual infrastructure (HSM, OIDC, OPA, …).
-- **EXPERIMENTAL** — a modest, clearly-hedged helper; may never graduate.
+This is **not** real quantum computing. That has no practical use for this project
+today, and adding it would be theater.
 
-This one is **EXPERIMENTAL**. It is promoted into the core ecosystem only if real
-usage or evidence proves its value — never merged into the kernel.
+## Authority
+
+This plugin holds **no authority**. The advisor can only return `"suspicious"` or
+`None`; the kernel decides.
 
 ## Install
 
 ```bash
-pip install -e .        # needs decision-os-min on the path
-pytest -q
+pip install "decision-os-min @ git+https://github.com/Aliipou/decision-os-min.git"
+pip install -e . --no-deps
+pytest -q          # AUTHGATE_BACKEND=python
 ```
+
+## Usage
+
+```python
+from dos_plugin_quantum import quantum_risk_advisor
+quantum_risk_advisor({"data_labels": ["long_term_secret"]})   # -> "suspicious"
+quantum_risk_advisor({"data_labels": []})                      # -> None
+```
+
+## Status and limitations
+
+- The advisor is a **one-line label check**, not real cryptographic analysis.
+- The QRNG is a stub only.
+- Honest note: the useful post-quantum work lives in `plugin-pqcrypto`. This
+  plugin is a candidate for pruning if it does not earn its keep.
