@@ -1,5 +1,7 @@
 # plugin-quantum
 
+**Live (graph):** [https://ali-plugin-quantum.vercel.app](https://ali-plugin-quantum.vercel.app)
+
 Quantum-safe posture helpers for the Decision OS / AuthGate stack.
 
 > Part of the Decision OS — governed by the Legitimacy ⊥ Authority pipeline
